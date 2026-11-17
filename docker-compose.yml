@@ -1,0 +1,31 @@
+services:
+  file-helper:
+    build: .
+    container_name: file-helper
+    restart: unless-stopped
+    environment:
+      HELPER_API_KEY: ${HELPER_API_KEY}
+      DISPLAY_ROOT: ${DISPLAY_ROOT:-Z:\}
+      TIMEZONE: ${TIMEZONE:-America/Chicago}
+      # Folder inside the share that Z:\ points to (blank = top of the share)
+      SHARE_ROOT: /share/${SHARE_SUBDIR:-}
+    volumes:
+      - share:/share
+    ports:
+      - "127.0.0.1:${HELPER_PORT:-8765}:8000"   # for testing from this PC only
+    networks: [default, file-helper]
+
+volumes:
+  # Docker connects straight to the network share (the drive letter Z: is not
+  # visible inside Docker). Values come from .env.
+  share:
+    driver: local
+    driver_opts:
+      type: cifs
+      device: ${SHARE_UNC}
+      o: "username=${SHARE_USER},password=${SHARE_PASSWORD},domain=${SHARE_DOMAIN:-WORKGROUP},sec=ntlmssp,vers=${SMB_VERSION:-3.0},uid=0,gid=0,file_mode=0664,dir_mode=0775"
+
+networks:
+  # NocoBase joins this network so it can call http://file-helper:8000
+  file-helper:
+    name: file-helper

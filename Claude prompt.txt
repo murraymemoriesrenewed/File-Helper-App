@@ -1,0 +1,58 @@
+Helper app business logic:
+
+The root directory on the network is Z:\
+
+Within the root there are a set of standard subdirectories.  These directories should never be renamed, moved or deleted by the Helper app.  They are:
+_Stage 01 - To Be Digitized
+_Stage 02 - Digitized
+_Stage 03 - Assigned For Editing
+_Stage 04 - To Be Reviewed
+_Stage 05 - To Be Output
+_Stage 06 - To Be Packaged
+_Stage 07 - To Be Invoiced
+_Stage 08 - To Be Paid
+_Stage 09 - To Be Shipped
+_Stage 10 - To Be Picked Up
+_Stage 11 - Archive
+__Inbox - To Do
+__Outbox - Done
+
+The Helper app has several core functions:
+1. Create subdirectories
+    a. When I new project is created in Nocobase, it will call the helper app will be called to create a standard set of subdirectories for each project, usually in the _Stage 01 - To Be Digitized direcoty.  The standard format for the customer order folder will be:
+    
+            '[YYYY-MM-DD] - [Order Number] - [Last Name], [First Name] - [Order Description]'
+            
+    The values in brackets will be supplied by Nocobase in the call to the Helper App.  This directory name will be passed back to Nocobase and stored in its database.
+    
+    b. Within customer order directory, the helper app will then create a set of standard subdirectories and files.  This are:
+    
+            _FINAL
+            _RAW
+            _TRACKER
+            
+    c.  In addition, the helper app will create a stub file named '.[Order Number] - [LastName]' within the _FINAL directory.  This file has no content.
+    
+    So, for example, the create function of the Helper app would create a directory tree like:
+    
+            2026-10-21 - 21816 - Ballenger, Noella - Slides
+                _FINAL
+                    .21816 - Ballenger
+                _RAW
+                _TRACKER
+                
+                
+    The full tree would be
+    
+            Z:\
+                _Stage 01 - To Be Digitized
+                    2026-10-21 - 21816 - Ballenger, Noella - Slides
+                    _FINAL
+                        .21816 - Ballenger
+                    _RAW
+                    _TRACKER
+                
+2. Move project folders.  The Helper app would move a client folder from one stage to another stage.  The To and from Stages will be provided in the call to the Helper app.
+
+3. Get properties.  The Helper app will be called to count the files and tally the disk space of a specific directory.  These data points will be passed back to Nocobase
+    
